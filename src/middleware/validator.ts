@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from './winston';
+import logger from './winston';
 import statusCodes from '../constants/statusCodes';
 
 const validator = (req: Request, res: Response, next: NextFunction) => {

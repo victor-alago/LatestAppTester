@@ -1,5 +1,5 @@
 import { Pool, types } from "pg";
-import { logger } from "../../middleware/winston";
+import logger from "../../middleware/winston";
 
 const db_config = {
   user: process.env.DB_USER,

@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = exports.register = void 0;
 const statusCodes_1 = __importDefault(require("../constants/statusCodes"));
-const winston_1 = require("../middleware/winston");
+const winston_1 = __importDefault(require("../middleware/winston"));
 const db_connect_1 = __importDefault(require("../boot/database/db_connect"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,7 +27,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const result = yield client.query("SELECT * FROM users WHERE email = $1;", [email]);
             if (result.rowCount) {
-                return res
+                res
                     .status(statusCodes_1.default.userAlreadyExists)
                     .json({ message: "User already has an account" });
             }
@@ -35,16 +35,16 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 yield client.query("BEGIN");
                 const addedUser = yield client.query(`INSERT INTO users(email, username, password, creation_date)
            VALUES ($1, $2, crypt($3, gen_salt('bf')), $4);`, [email, username, password, req.body.creation_date]);
-                winston_1.logger.info("USER ADDED", addedUser.rowCount);
+                winston_1.default.info("USER ADDED", addedUser.rowCount);
                 const address = yield client.query(`INSERT INTO addresses(email, country, street, city) VALUES ($1, $2, $3, $4);`, [email, country, street, city]);
-                winston_1.logger.info("ADDRESS ADDED", address.rowCount);
+                winston_1.default.info("ADDRESS ADDED", address.rowCount);
                 res.status(statusCodes_1.default.success).json({ message: "User created" });
                 yield client.query("COMMIT");
             }
         }
         catch (error) {
             yield client.query("ROLLBACK");
-            winston_1.logger.error(error.stack);
+            winston_1.default.error(error.stack);
             res.status(statusCodes_1.default.queryError).json({
                 message: "Exception occurred while registering",
             });
@@ -63,7 +63,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     else {
         db_connect_1.default.query("SELECT * FROM users WHERE email = $1 AND password = crypt($2, password);", [email, password], (err, rows) => {
             if (err) {
-                winston_1.logger.error(err.stack);
+                winston_1.default.error(err.stack);
                 res
                     .status(statusCodes_1.default.queryError)
                     .json({ error: "Exception occurred while logging in" });

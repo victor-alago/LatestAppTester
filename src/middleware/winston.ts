@@ -1,41 +1,43 @@
-import winston from 'winston';
-import { Writable } from 'stream';
+import { createLogger, transports, format, LoggerOptions } from 'winston';
 
-const options = {
-  file: {
-    level: "info",
-    filename: `./logs/app.log`,
-    handleExceptions: true,
-    maxsize: 5242880, // about 5MB
-    maxFiles: 5,
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.json()
-    ),
-  },
-  console: {
-    level: "debug",
-    handleExceptions: true,
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    ),
-  },
+interface Options {
+    file: {
+        level: string;
+        filename: string;
+        handleExceptions: boolean;
+        maxSize: number;
+        maxFiles: number;
+        format: LoggerOptions['format'];
+    };
+    console: {
+        level: string;
+        handleExceptions: boolean;
+        format: LoggerOptions['format'];
+    };
+}
+
+const options: Options = {
+    file: {
+        level: 'info',
+        filename: './logs/app.log',
+        handleExceptions: true,
+        maxSize: 5242880, // about 5MB
+        maxFiles: 5,
+        format: format.combine(format.timestamp(), format.json()),
+    },
+    console: {
+        level: 'debug',
+        handleExceptions: true,
+        format: format.combine(format.colorize(), format.simple()),
+    },
 };
 
-const logger = winston.createLogger({
-  transports: [
-    new winston.transports.File(options.file),
-    new winston.transports.Console(options.console),
-  ],
-  exitOnError: false,
+const logger = createLogger({
+    transports: [
+        new transports.File(options.file),
+        new transports.Console(options.console),
+    ],
+    exitOnError: false,
 });
 
-const morganStream = new Writable({
-  write: (chunk, _, callback) => {
-    logger.info(chunk.toString().trim());
-    callback();
-  },
-});
-
-export { logger, morganStream };
+export default logger;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-interface RegisterRequest extends Request {
+export interface RegisterRequest extends Request {
     body: {
         email: string;
         username: string;
@@ -10,12 +10,12 @@ interface RegisterRequest extends Request {
         creation_date?: string;
     };
 }
-interface LoginRequest extends Request {
+export interface LoginRequest extends Request {
     body: {
         email: string;
         password: string;
     };
 }
-declare const register: (req: RegisterRequest, res: Response) => Promise<Response<any, Record<string, any>>>;
+declare const register: (req: RegisterRequest, res: Response) => Promise<void>;
 declare const login: (req: LoginRequest, res: Response) => Promise<void>;
 export { register, login, };

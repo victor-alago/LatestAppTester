@@ -21,7 +21,6 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     messages: [{
       type: mongoose.Types.ObjectId,
-      // ref: 'Message'  // Assuming you have a Message model
     }],
   },
   {

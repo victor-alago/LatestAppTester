@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import statusCodes from '../constants/statusCodes';
-import { logger } from './winston';
+import logger from './winston';
 
 interface AuthenticatedRequest extends Request {
   user?: any;

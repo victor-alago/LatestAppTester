@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const pg_1 = require("pg");
-const winston_1 = require("../../middleware/winston");
+const winston_1 = __importDefault(require("../../middleware/winston"));
 const db_config = {
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -18,14 +21,14 @@ function startConnection() {
     db_connection = new pg_1.Pool(db_config);
     db_connection.connect((err) => {
         if (!err) {
-            winston_1.logger.info("PostgreSQL Connected");
+            winston_1.default.info("PostgreSQL Connected");
         }
         else {
-            winston_1.logger.error("PostgreSQL Connection Failed");
+            winston_1.default.error("PostgreSQL Connection Failed");
         }
     });
     db_connection.on("error", (err) => {
-        winston_1.logger.error("Unexpected error on idle client", err);
+        winston_1.default.error("Unexpected error on idle client", err);
         startConnection();
     });
 }

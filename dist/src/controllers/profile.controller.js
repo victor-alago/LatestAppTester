@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logout = exports.editPassword = void 0;
 const db_connect_1 = __importDefault(require("../boot/database/db_connect"));
-const winston_1 = require("../middleware/winston");
+const winston_1 = __importDefault(require("../middleware/winston"));
 const statusCodes_1 = __importDefault(require("../constants/statusCodes"));
 const editPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { oldPassword, newPassword } = req.body;
@@ -30,7 +30,7 @@ const editPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         else {
             db_connect_1.default.query("SELECT * FROM users WHERE email = $1 AND password = crypt($2, password);", [req.user.email, oldPassword], (err, rows) => {
                 if (err) {
-                    winston_1.logger.error(err.stack);
+                    winston_1.default.error(err.stack);
                     res
                         .status(statusCodes_1.default.queryError)
                         .json({ error: "Exception occurred while updating password" });
@@ -39,7 +39,7 @@ const editPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* (
                     if (rows.rows[0]) {
                         db_connect_1.default.query("UPDATE users SET password = crypt($1, gen_salt('bf')) WHERE email = $2;", [newPassword, req.user.email], (err) => {
                             if (err) {
-                                winston_1.logger.error(err.stack);
+                                winston_1.default.error(err.stack);
                                 res.status(statusCodes_1.default.queryError).json({
                                     error: "Exception occurred while updating password",
                                 });

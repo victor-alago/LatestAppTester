@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const winston_1 = require("./winston");
+const winston_1 = __importDefault(require("./winston"));
 const statusCodes_1 = __importDefault(require("../constants/statusCodes"));
 const validator = (req, res, next) => {
     if (req.body.creation_date) {
@@ -21,7 +21,7 @@ const validator = (req, res, next) => {
         next();
     }
     catch (error) {
-        winston_1.logger.error(error);
+        winston_1.default.error(error);
         res.status(statusCodes_1.default.badRequest).json({ error: "Bad request" });
     }
 };

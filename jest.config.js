@@ -6,7 +6,16 @@ module.exports = {
     "^.+.tsx?$": ["ts-jest",{}],
   },
   testMatch: ["**/**/*.test.ts"],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'node'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.json'  // Ensuring ts-jest uses the project's tsconfig
+    },
+  },
   verbose: true,
+  collectCoverage: true,
+  coverageDirectory: "coverage",
+  coverageReporters: ["json", "lcov", "text", "clover"],
   forceExit: true,
   clearMocks: true,
   resetMocks: true,

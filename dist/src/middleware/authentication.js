@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const statusCodes_1 = __importDefault(require("../constants/statusCodes"));
-const winston_1 = require("./winston");
+const winston_1 = __importDefault(require("./winston"));
 const verifyToken = (req, res, next) => {
     const token = req.header("Authorization");
     if (!token) {
@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) => {
         next();
     }
     catch (error) {
-        winston_1.logger.error(error);
+        winston_1.default.error(error);
         return res.status(statusCodes_1.default.unauthorized).json({ error: "Invalid token" });
     }
 };

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import statusCodes from '../constants/statusCodes';
-import { logger } from '../middleware/winston';
+import logger from '../middleware/winston';
 import pool from '../boot/database/db_connect';
 import jwt from 'jsonwebtoken';
 
-interface RegisterRequest extends Request {
+export interface RegisterRequest extends Request {
   body: {
     email: string;
     username: string;
@@ -16,14 +16,14 @@ interface RegisterRequest extends Request {
   };
 }
 
-interface LoginRequest extends Request {
+export interface LoginRequest extends Request {
   body: {
     email: string;
     password: string;
   };
 }
 
-const register = async (req: RegisterRequest, res: Response) => {
+const register = async (req: RegisterRequest, res: Response): Promise<void> => {
   const { email, username, password, country, city, street } = req.body;
 
   if (!email || !username || !password || !country) {
@@ -37,7 +37,7 @@ const register = async (req: RegisterRequest, res: Response) => {
         [email]
       );
       if (result.rowCount) {
-        return res
+        res
           .status(statusCodes.userAlreadyExists)
           .json({ message: "User already has an account" });
       } else {
@@ -71,7 +71,7 @@ const register = async (req: RegisterRequest, res: Response) => {
   }
 };
 
-const login = async (req: LoginRequest, res: Response) => {
+const login = async (req: LoginRequest, res: Response): Promise<void> => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -83,6 +83,7 @@ const login = async (req: LoginRequest, res: Response) => {
       (err, rows) => {
         if (err) {
           logger.error(err.stack);
+          // console.log('logger.error:', typeof logger.error);
           res
             .status(statusCodes.queryError)
             .json({ error: "Exception occurred while logging in" });
@@ -117,3 +118,5 @@ export {
   register,
   login,
 };
+
+

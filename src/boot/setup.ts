@@ -4,7 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
-import { logger, morganStream } from "../middleware/winston";
+import logger from "../middleware/winston";
 import notFound from "../middleware/notFound";
 import healthCheck from "../middleware/healthCheck";
 import verifyToken from "../middleware/authentication";
@@ -48,7 +48,11 @@ const registerCoreMiddleWare = () => {
       })
     );
 
-    app.use(morgan("combined", { stream: morganStream }));
+    app.use(
+      morgan("combined", {
+        stream: { write: (message: string) => logger.info(message.trim()) },
+      }),
+    );
     app.use(express.json()); // returning middleware that only parses Json
     app.use(cors({})); // enabling CORS
     app.use(helmet()); // enabling helmet -> setting response headers
@@ -70,6 +74,7 @@ const registerCoreMiddleWare = () => {
     app.use(notFound);
 
     logger.http("Done registering all middlewares");
+    
   } catch (err) {
     logger.error("Error thrown while executing registerCoreMiddleWare");
     process.exit(1);
