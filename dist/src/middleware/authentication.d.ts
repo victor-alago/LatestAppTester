@@ -1,6 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-interface AuthenticatedRequest extends Request {
-    user?: any;
+import { Response, NextFunction } from 'express';
+import { BaseRequest } from '../types/baseRequest.interface';
+export interface DecodedToken {
+    user: {
+        id: string;
+        email: string;
+    };
 }
-declare const verifyToken: (req: AuthenticatedRequest, res: Response, next: NextFunction) => Response | void;
+declare const verifyToken: (req: BaseRequest, res: Response, next: NextFunction) => Response | void;
 export default verifyToken;

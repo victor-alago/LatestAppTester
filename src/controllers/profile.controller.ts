@@ -1,20 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import pool from '../boot/database/db_connect';
 import logger from '../middleware/winston';
 import statusCodes from '../constants/statusCodes';
+import { EditPasswordRequest } from '../types/profileRequest.interface';
+import { BaseRequest } from '../types/baseRequest.interface';
 
-interface AuthenticatedRequest extends Request {
-  user: {
-    email: string;
-  };
-}
-
-interface EditPasswordRequest extends AuthenticatedRequest {
-  body: {
-    oldPassword: string;
-    newPassword: string;
-  };
-}
 
 const editPassword = async (req: EditPasswordRequest, res: Response) => {
   const { oldPassword, newPassword } = req.body;
@@ -66,7 +56,7 @@ const editPassword = async (req: EditPasswordRequest, res: Response) => {
   }
 };
 
-const logout = async (req: AuthenticatedRequest, res: Response) => {
+const logout = async (req: BaseRequest, res: Response) => {
   if (req.session.user) {
     delete req.session.user;
   }
@@ -78,3 +68,4 @@ export {
   editPassword,
   logout,
 };
+

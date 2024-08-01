@@ -43,8 +43,7 @@ const register = async (req: RegisterRequest, res: Response): Promise<void> => {
       } else {
         await client.query("BEGIN");
         const addedUser = await client.query(
-          `INSERT INTO users(email, username, password, creation_date)
-           VALUES ($1, $2, crypt($3, gen_salt('bf')), $4);`,
+          `INSERT INTO users(email, username, password, creation_date) VALUES ($1, $2, crypt($3, gen_salt('bf')), $4);`,
           [email, username, password, req.body.creation_date]
         );
 
@@ -83,7 +82,6 @@ const login = async (req: LoginRequest, res: Response): Promise<void> => {
       (err, rows) => {
         if (err) {
           logger.error(err.stack);
-          // console.log('logger.error:', typeof logger.error);
           res
             .status(statusCodes.queryError)
             .json({ error: "Exception occurred while logging in" });

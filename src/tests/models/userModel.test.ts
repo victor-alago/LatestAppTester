@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import User from '../../src/models/userModel';
-import { IUser } from '../../src/types/user';
+import User from '../../models/userModel';
+import { IUser } from '../../types/user';
 
 const { Types } = mongoose;
 

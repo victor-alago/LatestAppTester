@@ -1,48 +1,57 @@
-// const pool = require("../boot/database/db_connect");
-// const logger = require("../middleware/winston");
-// const statusCodes = require("../constants/statusCodes");
-// const ratingModel = require("../models/ratingModel");
+import { Response } from 'express';
+import pool from '../boot/database/db_connect';
+import logger from '../middleware/winston';
+import statusCodes from '../constants/statusCodes';
+import ratingModel, { IRatingDocument } from '../models/ratingModel';
+import { AddRatingRequest } from '../types/addRatingReq.interface';
 
-// const addRating = async (req, res) => {
-//   const { movieId } = req.params;
-//   const { rating } = req.body;
+export const addRating = async (
+    req: AddRatingRequest,
+    res: Response
+): Promise<Response> => {
+    const { movieId } = req.params;
+    const { rating } = req.body;
 
-//   let movie_id = parseInt(movieId);
+    const movie_id: number = parseInt(movieId);
 
-//   if (isNaN(movie_id) || !rating) {
-//     res.status(statusCodes.badRequest).json({ message: "Missing parameters" });
-//   } else {
-//     try {
-//       const ratingObj = new ratingModel({
-//         email: req.user.email,
-//         movie_id,
-//         rating, // equivalent of rating: rating
-//       });
+    if (isNaN(movie_id) || !rating) {
+        return res.status(statusCodes.badRequest).json({
+            message: 'Missing parameters',
+        });
+    } else {
+        try {
+            const ratingObj = new ratingModel({
+                email: 'johndoe@email.com', // TODO update back to req.user.email
+                movie_id,
+                rating,
+            });
 
-//       await ratingObj.save();
+            await ratingObj.save();
 
-//       const ratings = await ratingModel.find({}, { rating });
+            const ratings: Partial<IRatingDocument>[] = await ratingModel.find(
+                { movie_id },
+                { rating: 1 }
+            );
 
-//       const averageRating = ratings.reduce(
-//         (acc, rating) => acc + rating.rating,
-//         0
-//       );
+            const averageRating =
+                ratings.reduce(
+                    (acc: number, rating: { rating: number }) =>
+                        acc + rating.rating,
+                    0
+                ) / ratings.length;
 
-//       console.log(averageRating, typeof averageRating);
-//       await pool.query("UPDATE movies SET rating = $1 WHERE movie_id = $2;", [
-//         averageRating,
-//         movie_id,
-//       ]);
-//       res.status(statusCodes.success).json({ message: "Rating added" });
-//     } catch (error) {
-//       logger.error(error.stack);
-//       res
-//         .status(statusCodes.queryError)
-//         .json({ error: "Exception occurred while adding rating" });
-//     }
-//   }
-// };
-
-// module.exports = {
-//   addRating,
-// };
+            await pool.query(
+                'UPDATE movies SET rating = $1 WHERE movie_id = $2;',
+                [averageRating, movie_id]
+            );
+            return res
+                .status(statusCodes.success)
+                .json({ message: 'Rating added' });
+        } catch (error) {
+            logger.error(error.stack);
+            return res.status(statusCodes.queryError).json({
+                error: 'Exception occurred while adding rating',
+            });
+        }
+    }
+};

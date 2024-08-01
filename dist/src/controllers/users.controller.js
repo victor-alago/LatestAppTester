@@ -33,8 +33,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
             else {
                 yield client.query("BEGIN");
-                const addedUser = yield client.query(`INSERT INTO users(email, username, password, creation_date)
-           VALUES ($1, $2, crypt($3, gen_salt('bf')), $4);`, [email, username, password, req.body.creation_date]);
+                const addedUser = yield client.query(`INSERT INTO users(email, username, password, creation_date) VALUES ($1, $2, crypt($3, gen_salt('bf')), $4);`, [email, username, password, req.body.creation_date]);
                 winston_1.default.info("USER ADDED", addedUser.rowCount);
                 const address = yield client.query(`INSERT INTO addresses(email, country, street, city) VALUES ($1, $2, $3, $4);`, [email, country, street, city]);
                 winston_1.default.info("ADDRESS ADDED", address.rowCount);

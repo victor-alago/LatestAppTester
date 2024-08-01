@@ -5,10 +5,10 @@ import helmet from "helmet";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import logger from "../middleware/winston";
-import notFound from "../middleware/notFound";
-import healthCheck from "../middleware/healthCheck";
+// import notFound from "../middleware/notFound";
+// import healthCheck from "../middleware/healthCheck";
 import verifyToken from "../middleware/authentication";
-import validator from "../middleware/validator";
+// import validator from "../middleware/validator";
 
 // ROUTES
 // import authRoutes from "../routes/auth.routes";
@@ -30,6 +30,12 @@ try {
   });
 } catch (error) {
   logger.error("Error connecting to DB" + error);
+}
+
+declare module 'express-session' {
+  export interface SessionData {
+      user: { [key: string]: { email: string } };
+  }
 }
 
 // MIDDLEWARE
@@ -57,8 +63,8 @@ const registerCoreMiddleWare = () => {
     app.use(cors({})); // enabling CORS
     app.use(helmet()); // enabling helmet -> setting response headers
 
-    app.use(validator);
-    app.use(healthCheck);
+    // app.use(validator);
+    // app.use(healthCheck);
 
     // app.use("/auth", authRoutes);
     app.use("/users", usersRoutes);
@@ -71,9 +77,11 @@ const registerCoreMiddleWare = () => {
     // app.use("/comments", verifyToken, commentsRoutes);
 
     // 404 handling for not found
-    app.use(notFound);
+    // app.use(notFound);
 
     logger.http("Done registering all middlewares");
+
+    return app;
     
   } catch (err) {
     logger.error("Error thrown while executing registerCoreMiddleWare");
@@ -114,4 +122,4 @@ const startApp = () => {
   }
 };
 
-export { startApp };
+export { startApp, registerCoreMiddleWare };
